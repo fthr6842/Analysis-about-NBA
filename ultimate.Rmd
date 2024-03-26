@@ -1,0 +1,150 @@
+---
+title: "ultimate models and comparison"
+author: "陸捌肆貳昆蟲映像工作室"
+date: '2023-06-02'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(png)
+library(knitr)
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled)
+library(plm)
+library(dplyr)
+library(tidyverse)
+library(magrittr)
+```
+#引入、整理資料
+```{r}
+data1 = read.csv('nba_group1s.csv')
+data2 = pdata.frame(data1, c("game_id", "season_id"))
+```
+#pts~各隊(dummy)
+```{r}
+fit = plm(pts~factor(team_abbreviation_home)
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+summary(fit)
+```
+#wl_home~各隊(dummy)
+```{r}
+fit = plm(wl_home~factor(team_abbreviation_home)
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+summary(fit)
+```
+#pts~dummy
+#以forward selection測試attendence, distance, across, alt_diff
+```{r model 1-1}
+fit = plm(pts~factor(team_abbreviation_home)
+           +attendence
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+```{r}
+fit = plm(pts~factor(team_abbreviation_home)
+           +attendence+distance
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+```{r}
+fit = plm(pts~factor(team_abbreviation_home)
+           +attendence+across
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+```{r}
+fit = plm(pts~factor(team_abbreviation_home)
+           +attendence+alt_diff
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+#wl_home~dummy
+#以forward selection測試attendence, distance, across, alt_diff
+```{r model 1-2}
+fit = plm(wl_home~factor(team_abbreviation_home)
+           +attendence
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+```{r}
+fit = plm(wl_home~factor(team_abbreviation_home)
+          +attendence+distance
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+```{r}
+fit = plm(wl_home~factor(team_abbreviation_home)
+          +attendence+distance+across
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+```{r}
+fit = plm(wl_home~factor(team_abbreviation_home)
+          +attendence+distance+alt_diff
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+#pts~dummy
+#以forward selection測試fta, op_away_win
+```{r model 2-1}
+fit = plm(pts~factor(team_abbreviation_home)
+          +fta
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+```{r}
+fit = plm(pts~factor(team_abbreviation_home)
+          +fta+op_away_win
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+```{r}
+fit = plm(pts~factor(team_abbreviation_home)
+           +(fta+op_away_win)^2
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+#給定Y為pts不採納fta*op_win
+
+#wl_home~dummy
+#以forward selection測試fta, op_win
+```{r model 2-2}
+fit = plm(wl_home~factor(team_abbreviation_home)
+           +fta
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+```{r}
+fit = plm(wl_home~factor(team_abbreviation_home)
+           +fta+op_away_win
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+```{r}
+fit = plm(wl_home~factor(team_abbreviation_home)
+           +(fta+op_away_win)^2
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+#給定Y為wl_home不採納fta*op_win
+
+
+#pts~dummy
+#以forward selection測試fta, op_win
+```{r model 3-1}
+fit = plm(pts~factor(team_abbreviation_home)
+             +fg_pct+ft_pct+ast+reb+op_away_win+(fta+attendence)^2
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+```{r model 3-2}
+fit = plm(wl_home~factor(team_abbreviation_home)
+             +fg_pct+ft_pct+ast+reb+op_away_win+fta
+           , data=data2, model='pooling')
+tab_model(fit, digits=4)
+```
+
+
